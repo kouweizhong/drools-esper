@@ -1,0 +1,40 @@
+package memelet.droolsesper
+
+import java.util.Map
+import memelet.droolsesper.MarketDataEvent
+//import memelet.droolsesper.ArrivalRates
+
+global Map results
+
+rule "How_do_I_measure_the_rate_of_arrival_of_events_in_a_given_time_period_per_another_category?"
+/*
+ select count(*) as cnt from MarketDataEvent.win:time_batch(1 second)
+ group by feed
+*/
+/*
+ This is not directly supported by Drools. Here it is approximated using the 
+ accumulator function collectMap (memelet.drools.CollectMapAccumulateFunction).
+ However this accumulator is hard coded to return the count of instances as
+ the map value, where in Esper the value yield by 'group by' is generic on 
+ select clause.
+ 
+ TODO Is there a way for an accumulator function to take multiple arguments?
+ This might allow for a more generic accumulator that would be as generic
+ as Esper's 'group by'. 
+*/
+when
+	$rates : Map() from accumulate ( 
+    	$e : MarketDataEvent($feed : feed) over window:time(1s) from entry-point "stream", 
+    	collectMap($feed))
+    
+then
+	results.put("arrivalRates", $rates);
+end
+
+//----
+
+declare MarketDataEvent
+	@role(event)
+	@expires(10s)
+end
+

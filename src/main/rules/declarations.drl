@@ -1,0 +1,9 @@
+package memelet.droolsesper
+
+import memelet.droolsesper.MarketDataEvent
+
+declare MarketDataEvent
+	@role(event)
+	@expires(10s)
+end
+

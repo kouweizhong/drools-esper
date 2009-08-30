@@ -1,0 +1,30 @@
+package memelet.droolsesper
+
+import java.util.Map
+//import memelet.droolsesper.ArrivalRate
+
+global Map results
+
+rule "How do I measure the rate of arrival of events in a given time period?"
+/*
+ select count(*) as cnt from MarketDataEvent.win:time_batch(1 second)
+*/
+/*
+ 5.0.1 does not support 'time_batch', so the best we can do is capture the
+ continous count. 
+*/
+when
+	$rate : Long() from accumulate ( 
+    	$e: MarketDataEvent() over window:time(1s) from entry-point "stream",
+    	count($e))
+    
+then
+	results.put("arrivalRate", $rate);
+end
+
+//----
+
+declare MarketDataEvent
+	@role(event)
+	@expires(10s)
+end
