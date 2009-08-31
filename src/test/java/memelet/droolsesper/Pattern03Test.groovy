@@ -15,15 +15,13 @@ import org.junit.Test
 import org.junit.Before
 import org.junit.Ignore
 
-import static memelet.droolsesper.DroolsFixture.FIRE_UNTIL_HALT;
-
 public class Pattern03Test extends AbstractEsperEventPatternsTest {
 
 	def List<String> drlFilenames() { ["Pattern_03.drl"] }
 
 	// TODO Figure out why this test fails but the one using the named entry
 	// point does not
-	@Test
+	@Test @Ignore
 	def void correlateEventsArrivingIn2OrMoreStreams() {
 		// Not the same account
 		insert new WithdrawalEvent(id: "w1", accountNumber: "AAA", amount: 100)

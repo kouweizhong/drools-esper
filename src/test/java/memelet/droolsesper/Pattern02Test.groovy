@@ -15,8 +15,6 @@ import org.junit.Test
 import org.junit.Before
 import org.junit.Ignore
 
-import static memelet.droolsesper.DroolsFixture.FIRE_UNTIL_HALT;
-
 public class Pattern02Test extends AbstractEsperEventPatternsTest {
 
 	def List<String> drlFilenames() { ["Pattern_02.drl"] }

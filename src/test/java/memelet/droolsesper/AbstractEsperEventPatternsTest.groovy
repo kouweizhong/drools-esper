@@ -18,17 +18,32 @@ import org.junit.Before
 import org.junit.After
 import org.junit.Ignore
 
-import static memelet.droolsesper.DroolsFixture.FIRE_UNTIL_HALT;
+import org.drools.KnowledgeBase;
+import org.drools.KnowledgeBaseConfiguration;
+import org.drools.KnowledgeBaseFactory;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.ResourceType;
+import org.drools.conf.EventProcessingOption;
+import org.drools.io.Resource;
+import org.drools.io.ResourceFactory;
+import org.drools.runtime.KnowledgeSessionConfiguration;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.conf.ClockTypeOption;
+import org.drools.time.SessionPseudoClock;
+
+import static org.junit.Assert.fail;
 
 abstract class AbstractEsperEventPatternsTest {
 
 	abstract def List<String> drlFilenames()
+	def Boolean fireUntilHalt() { false }
 	def String entryPointName() { "stream" }
 
-	def drools
 	def session
 	def clock
 	def entryPoint
+	
 	def results = new HashMap<String,Object>()
 
 	def advanceTime(duration, timeUnit) {
@@ -40,25 +55,45 @@ abstract class AbstractEsperEventPatternsTest {
 	}
 
 	def fireAllRules() {
-		drools.session.fireAllRules()
+		session.fireAllRules()
 	}
 
 	@Before
-	def void setup() {
-		drools = new DroolsFixture(!FIRE_UNTIL_HALT, ["declarations.drl"] + drlFilenames())
-		drools.setup()
-		session = drools.session
-		clock = drools.clock
-		entryPoint = session.getWorkingMemoryEntryPoint(entryPointName());
-		session.setGlobal("results", results);
+	def void setupDrools() {
+		def kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder()
+		for (drlFilename in ["declarations.drl"] + drlFilenames()) {
+			Resource resource = ResourceFactory.newClassPathResource(drlFilename, getClass())
+			kbuilder.add(resource, ResourceType.DRL)
+		}
+		if (kbuilder.hasErrors()) {
+			fail(kbuilder.getErrors().toString())
+		}
 		
-//		drools.addEventListener(new DebugWorkingMemoryEventListener())
-//		drools.addEventListener(new DebugAgendaEventListener())
-//		drools.addEventListener(agendaEventTracker)
+		def kbaseConfig = KnowledgeBaseFactory.newKnowledgeBaseConfiguration()
+		kbaseConfig.setOption(EventProcessingOption.STREAM)
+		def kbase = KnowledgeBaseFactory.newKnowledgeBase(kbaseConfig)
+		kbase.addKnowledgePackages(kbuilder.getKnowledgePackages())
+		
+		def ksessionConfig = KnowledgeBaseFactory.newKnowledgeSessionConfiguration()
+		ksessionConfig.setOption(ClockTypeOption.get("pseudo"))
+
+		session= kbase.newStatefulKnowledgeSession(ksessionConfig, null)
+		entryPoint = session.getWorkingMemoryEntryPoint(entryPointName())
+		clock = session.getSessionClock()
+		session.setGlobal("results", results);
+
+		if (fireUntilHalt()) {
+			Thread.start {
+				session.fireUntilHalt()
+			}
+		}
 	}
 
 	@After
-	def void teardown() {
-		drools.teardown()
+	def void teardownDrools() {
+		if (fireUntilHalt()) {
+			Thread.sleep(1000);
+			session.halt();
+		}		
 	}
 }
