@@ -2,8 +2,7 @@ package memelet.droolsesper;
 
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseConfiguration;
@@ -12,50 +11,34 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.conf.EventProcessingOption;
+import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.KnowledgeSessionConfiguration;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.conf.ClockTypeOption;
-import org.drools.runtime.rule.WorkingMemoryEntryPoint;
 import org.drools.time.SessionPseudoClock;
-import org.junit.rules.TestWatchman;
-import org.junit.runners.model.FrameworkMethod;
 
-public class DroolsFixture extends TestWatchman {
+public class DroolsFixture {
 	
 	public static final boolean FIRE_UNTIL_HALT = true;
 	
-	private final String entryPointName;
 	private final boolean fireUntilHalt;
-	private final String[] commonDrls;
+	private final ArrayList<String> drlFilenames;
 	
 	public StatefulKnowledgeSession session;
 	public SessionPseudoClock clock;
-	public WorkingMemoryEntryPoint entryPoint;
-	public Map<String,Object> results = new HashMap<String,Object>();
 
-	public DroolsFixture(String entryPointName, boolean fireUntilHalt, String... commonDrls) {
-		this.entryPointName = entryPointName;
+	public DroolsFixture(boolean fireUntilHalt, ArrayList<String> drlFilenames) {
 		this.fireUntilHalt = fireUntilHalt;
-		this.commonDrls = commonDrls;
+		this.drlFilenames = drlFilenames;
 	}
 	
-	public DroolsFixture(String entryPointName) {
-		this(entryPointName, !FIRE_UNTIL_HALT);
-	}
-	
-	@Override
-	public void starting(FrameworkMethod method) {
-		createSession(method.getName());
-	}
-
-	protected void createSession(String testName) {
+	public void setup() {
 		KnowledgeBuilder  kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-		kbuilder.add(ResourceFactory.newClassPathResource(testName+".drl", getClass()), ResourceType.DRL);
-		for (String commonDrl : commonDrls) {
-			kbuilder.add(ResourceFactory.newClassPathResource(commonDrl+".drl", getClass()), ResourceType.DRL);
+		for (String drlFilename : drlFilenames) {
+			Resource resource = ResourceFactory.newClassPathResource(drlFilename, getClass());
+			kbuilder.add(resource, ResourceType.DRL);
 		}
-		
 		if (kbuilder.hasErrors()) {
 			fail(kbuilder.getErrors().toString() );
 		}
@@ -70,9 +53,6 @@ public class DroolsFixture extends TestWatchman {
 
 		session= kbase.newStatefulKnowledgeSession(ksessionConfig, null);
 		clock = session.getSessionClock();
-		entryPoint = session.getWorkingMemoryEntryPoint(entryPointName);
-		
-		session.setGlobal("results", results);
 
 		if (fireUntilHalt) {
 			new Thread(new Runnable() {
@@ -82,8 +62,8 @@ public class DroolsFixture extends TestWatchman {
 			}).start();
 		}
 	}
-	 
-	public void finished(FrameworkMethod method) {
+
+	public void teardown() {
 		if (fireUntilHalt) {
 			try {
 				Thread.sleep(100);

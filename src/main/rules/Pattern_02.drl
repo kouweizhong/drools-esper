@@ -1,17 +1,20 @@
 package memelet.droolsesper
 
 import java.util.Map
-import memelet.droolsesper.MarketDataEvent
 
 global Map results
 
 dialect "mvel"
 
-rule "How_do_I_measure_the_rate_of_arrival_of_events_in_a_given_time_period_per_another_category?"
 /*
+ How do I measure the rate of arrival of events in a given time period per another category?
+ 
+ http://esper.codehaus.org/tutorials/solution_patterns/solution_patterns.html#throughput-2
+ 
  	select count(*) as cnt from MarketDataEvent.win:time_batch(1 second)
  	group by feed
 */
+
 /*
  5.0.1 does not support 'time_batch', so the best we can do is capture the
  continous count.
@@ -25,19 +28,12 @@ rule "How_do_I_measure_the_rate_of_arrival_of_events_in_a_given_time_period_per_
  This might allow for a more generic accumulator that would be as generic
  as Esper's 'group by'. 
 */
+
+rule "Rate of arrival of events in a given time period per category?"
 when
 	$rates : Map() from accumulate ( 
-    	$e : MarketDataEvent($feed : feed) over window:time(1s) from entry-point "stream", 
-    	collectMap($feed))
-    
+    	$e : MarketDataEvent($feed : feed) over window:time(1s), 
+    	collectMap($feed))    
 then
 	results.put("arrivalRates", $rates);
 end
-
-//----
-
-declare MarketDataEvent
-	@role(event)
-	@expires(10s)
-end
-

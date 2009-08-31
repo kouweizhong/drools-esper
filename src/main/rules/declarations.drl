@@ -1,9 +1,32 @@
 package memelet.droolsesper
 
-import memelet.droolsesper.MarketDataEvent
-
 declare MarketDataEvent
 	@role(event)
 	@expires(10s)
+end
+
+declare FraudWarningEvent
+	@role(event)
+	@expires(60s)
+end
+
+declare WithdrawalEvent
+	@role(event)
+	@expires(60s)
+end
+
+declare StartEvent
+	@role(event)
+	@expires(60s)
+end
+
+declare AbortedEvent
+	@role(event)
+	@expires(60s)
+end
+
+declare FinishedEvent
+	@role(event)
+	@expires(60s)
 end
 

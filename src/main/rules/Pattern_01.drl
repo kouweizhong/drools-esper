@@ -1,31 +1,28 @@
 package memelet.droolsesper
 
 import java.util.Map
-
-global Map results
-
 dialect "mvel"
 
-rule "How do I measure the rate of arrival of events in a given time period?"
 /*
+ How do I measure the rate of arrival of events in a given time period?
+ 
+ http://esper.codehaus.org/tutorials/solution_patterns/solution_patterns.html#throughput-1
+	
  	select count(*) as cnt from MarketDataEvent.win:time_batch(1 second)
 */
+
 /*
  5.0.1 does not support 'time_batch', so the best we can do is capture the
  continous count. 
 */
+
+global Map results
+
+rule "Rate of arrival of events in a given time period?"
 when
 	$rate : Long() from accumulate ( 
-    	$e: MarketDataEvent() over window:time(1s) from entry-point "stream",
-    	count($e))
-    
+    	$e: MarketDataEvent() over window:time(1s),
+    	count($e))    
 then
 	results.put("arrivalRate", $rate);
-end
-
-//----
-
-declare MarketDataEvent
-	@role(event)
-	@expires(10s)
 end

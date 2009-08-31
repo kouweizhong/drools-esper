@@ -1,0 +1,41 @@
+package memelet.droolsesper
+
+import java.util.Map
+global Map results
+
+dialect "mvel"
+
+/*
+ How do I use patterns to correlate events arriving in-order or out-of-order?
+ 
+ http://esper.codehaus.org/tutorials/solution_patterns/solution_patterns.html#correlate-3
+ 
+	select * from pattern [every a=AbortedEvent -> 
+  		s=StartEvent(exchangeId = s.echangeId) where timer:within(30 sec)]
+*/
+
+rule "StartEvent followed by AbortedEvent"
+when
+	$se : StartEvent()		
+	$ae : AbortedEvent(exchangeId == $se.exchangeId, this after[0s,30s] $se)
+then
+	System.out.println("*** $se=" + $se.id + ", $ae=" + $ae.id);
+	
+	results.put("startEvent", $se);
+	results.put("abortedEvent", $ae);
+	
+	// We have to retract the StartEvent to similate esper's [every a->b]
+	retract($se)
+end
+
+/*
+  	select * from pattern [every s=StartEvent -> 
+  		(f=FinishedEvent(exchangeId = s.echangeId) where timer:within(30 sec)
+    		and not AbortedEvent(exchangeId = s.echangeId) where timer:within(30 sec)]
+  		
+*/
+rule "foo"
+when
+then
+end
+

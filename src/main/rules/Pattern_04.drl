@@ -1,0 +1,32 @@
+package memelet.droolsesper
+
+import java.util.Map
+global Map results
+
+dialect "mvel"
+
+/*
+ How do I correlate events arriving out-of-order?
+ 
+ http://esper.codehaus.org/tutorials/solution_patterns/solution_patterns.html#correlate-2
+ 
+	select rstream * from
+  		StartEvent.win:time(30 sec) start 
+  			left outer join
+  		AbortedEvent.win:time(30 sec) abort 
+  			on about.exchangeId = start.exchangeId
+    		left outer join
+  		FinishedEvent.win:time(30 sec) finished
+    		on finished.exchangeId = start.exchangeId
+    		
+	In this pattern Esper is observering the 'remove' stream. Events
+	go into the 'remove' stream at the end of the statement window
+	(eg, A StartEvent will go into the 'remove' 30 seconds after 
+	it has entered this statement.)      		
+*/	
+
+rule "How_do_I_correlate_events_arriving_out_of_order?"
+when
+then
+end
+
