@@ -29,6 +29,7 @@ import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.KnowledgeSessionConfiguration;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.WorkingMemoryEntryPoint
 import org.drools.runtime.conf.ClockTypeOption;
 import org.drools.time.SessionPseudoClock;
 
@@ -40,11 +41,11 @@ abstract class AbstractEsperEventPatternsTest {
 	def Boolean fireUntilHalt() { false }
 	def String entryPointName() { "stream" }
 
-	def session
-	def clock
-	def entryPoint
+	def StatefulKnowledgeSession session
+	def SessionPseudoClock clock
+	def WorkingMemoryEntryPoint entryPoint
 	
-	def results = new HashMap<String,Object>()
+	def Map<String,Object> results = new HashMap<String,Object>()
 
 	def advanceTime(duration, timeUnit) {
 		clock.advanceTime(duration, timeUnit)

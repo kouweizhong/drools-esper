@@ -1,0 +1,36 @@
+package memelet.droolsesper
+
+import java.util.List
+import java.util.Map
+global Map results
+
+dialect "mvel"
+
+/*
+
+ How to implement an On-Off window? How to detect events between other events?
+ 
+ http://esper.codehaus.org/tutorials/solution_patterns/solution_patterns.html#correlate-4
+ 
+	select * from pattern [
+  		beginevent=Event(param1 = 2, param2 = 2) 
+    		-> middleevent=Event(param1 != beginevent.param1, param2 != 0) 
+         		until endevent=Event(param1 = beginevent.param1, param2 = 0)
+  	]	
+*/	
+
+rule "detect events between other events"
+when
+	$begin : ParamEvent(param1 == 2, param2 == 2)
+	
+	$end : ParamEvent(param1 == $begin.param1 && param2 == 0, this after[1ms] $begin)
+
+	$middle : List(empty == false) from collect(
+		ParamEvent(this after[1ms] $begin, this before[1ms] $end))
+		
+then
+	results.put("begin", $begin)
+	results.put("end", $end)
+	results.put("middle", $middle)
+end
+

@@ -17,8 +17,8 @@ dialect "mvel"
 rule "[every s->f&&!a] How do I use patterns to correlate events arriving in-order or out-of-order?"
 when
 	$se : StartEvent($exchangeId : exchangeId)                               
-	$fe : FinishedEvent(exchangeId == $exchangeId, this after[0s,30s] $se) 	  
-	not (AbortedEvent(exchangeId == $exchangeId, this after[0s,30s] $se)) 		
+	$fe : FinishedEvent(exchangeId == $exchangeId, this after[1ms,30s] $se) 	  
+	not (AbortedEvent(exchangeId == $exchangeId, this after[1ms,30s] $se)) 		
 then
 	System.out.println("*** $se=" + $se.id + ", $fe=" + $fe.id);
 	
