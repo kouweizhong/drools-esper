@@ -16,8 +16,8 @@ dialect "mvel"
 
 rule "StartEvent followed by AbortedEvent"
 when
-	$se : StartEvent()		
-	$ae : AbortedEvent(exchangeId == $se.exchangeId, this after[0s,30s] $se)
+	$ae : AbortedEvent()		
+	$se : StartEvent(exchangeId == $se.exchangeId, this after[1ms,30s] $ae)
 then
 	System.out.println("*** $se=" + $se.id + ", $ae=" + $ae.id);
 	

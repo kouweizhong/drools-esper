@@ -30,3 +30,8 @@ declare FinishedEvent
 	@expires(60s)
 end
 
+declare ParamEvent
+	@role(event)
+	@expires(60s)
+end
+

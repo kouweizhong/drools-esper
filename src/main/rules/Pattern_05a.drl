@@ -16,7 +16,7 @@ dialect "mvel"
 rule "[every s->a] How do I use patterns to correlate events arriving in-order or out-of-order?"
 when
 	$se : StartEvent() 		
-	$ae : AbortedEvent(exchangeId == $se.exchangeId, this after[0s,30s] $se)
+	$ae : AbortedEvent(exchangeId == $se.exchangeId, this after[1ms,30s] $se)
 then
 	results.put("startEvent", $se);
 	results.put("abortedEvent", $ae);

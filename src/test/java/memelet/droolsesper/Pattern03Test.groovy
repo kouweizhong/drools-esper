@@ -21,7 +21,8 @@ public class Pattern03Test extends AbstractEsperEventPatternsTest {
 
 	// TODO Figure out why this test fails but the one using the named entry
 	// point does not
-	@Test @Ignore
+	@Ignore
+	@Test 
 	def void correlateEventsArrivingIn2OrMoreStreams() {
 		// Not the same account
 		insert new WithdrawalEvent(id: "w1", accountNumber: "AAA", amount: 100)
