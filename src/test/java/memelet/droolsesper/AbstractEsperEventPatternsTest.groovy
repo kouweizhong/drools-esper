@@ -109,26 +109,49 @@ abstract class AbstractEsperEventPatternsTest {
 		session.fireAllRules()
 	}
 
+	/*
+	 * The newFact methods can be curried to create scala-like case class ctors.
+	 * 
+	 *   def MarketDataEvent = this.&newFact.curry("memelet.droolsesper", "MarketDataEvent")
+	 *   ...
+	 *   def e1 = MarketDataEvent(ticker:"IBM",exchangeId:"NASD")
+	 *   def e2 = MarketDataEvent(ticker:"DELL",exchangeId:"NASD")
+	 */
+	
 	def newFact(packageName, className) {
 		kbase.getFactType(packageName, className).newInstance()
 	}
 
 	def newFact(packageName, className, properties) {
 		def fact = newFact(packageName, className)
-		properties.each { prop, value ->
-			fact."${prop}" = value
-		}
+		setProperties(fact, properies)
 		fact
 	}
 
-	def methodMissing(String name, args) {
-		if (looksLikeConstructor(args)) {
-			newFact(this.getClass().getPackage().getName(), name, args[0])
-		} else {
-			throw new MissingMethodException(name, getClass(), args)
+	private setProperties(object, properties) {
+		properties.each { prop, value ->
+			object."${prop}" = value
 		}
 	}
 
+	/*
+	 * This will try to create fact instances.
+	 */
+	def methodMissing(String name, args) {
+		if (!looksLikeConstructor(args)) {
+			throw new MissingMethodException(name, getClass(), args)
+		}
+		
+		def factType = kbase.getFactType(this.getClass().getPackage().getName(), name)
+		if (factType == null) {
+			throw new MissingMethodException(name, getClass(), args)
+		}
+		
+		def fact = factType.newInstance()
+		setProperties(fact, args[0])
+		fact
+	}
+	
 	private looksLikeConstructor(args) {
 		args instanceof Object[] && args.length == 1 && args[0] instanceof HashMap
 	}

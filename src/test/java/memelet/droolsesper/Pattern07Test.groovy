@@ -24,7 +24,6 @@ public class Pattern07Test extends AbstractEsperEventPatternsTest {
 		insert Trade(id: "b3", userId: 'U1002', ccypair: "US/CA", direction: "BUY")
 		
 		fireAllRules
-
 		def userIds = results.collect { key, trade -> trade.userId }
 		assert userIds.sort() == ["U1000", "U1001", "U1002"]
         assert results.find { key, trade -> trade.id == "a" } == null

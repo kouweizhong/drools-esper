@@ -18,7 +18,6 @@ import org.junit.Ignore
 public class Pattern01Test extends AbstractEsperEventPatternsTest {
 
 	def List<String> drlFilenames() { ["Pattern_01.drl"] }
-//	def MarketDataEvent = this.&newFact.curry("memelet.droolsesper", "MarketDataEvent")
 
 	@Test
 	def void rateOfArrivalInAGivenTimePeriod() {
@@ -32,7 +31,7 @@ public class Pattern01Test extends AbstractEsperEventPatternsTest {
         10.times { 
 			advanceTime 100.ms
 			insert MarketDataEvent(ticker: it as String)
-			fireAllRules			
+			fireAllRules				
 			assert results["arrivalRate"] == 10
 		}
 	}
