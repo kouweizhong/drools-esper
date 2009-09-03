@@ -23,16 +23,16 @@ public class Pattern01Test extends AbstractEsperEventPatternsTest {
 	@Test
 	def void rateOfArrivalInAGivenTimePeriod() {
         10.times { 
-            advanceTime 100, MILLISECONDS
+            advanceTime 100.ms
 			insert MarketDataEvent(ticker: it as String)
 		}
-		fireAllRules()	
+		fireAllRules
 		assert results["arrivalRate"] == 10
 		
         10.times { 
-			advanceTime 100, MILLISECONDS
+			advanceTime 100.ms
 			insert MarketDataEvent(ticker: it as String)
-			fireAllRules()			
+			fireAllRules			
 			assert results["arrivalRate"] == 10
 		}
 	}

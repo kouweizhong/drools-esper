@@ -24,29 +24,29 @@ public class Pattern05aTest extends AbstractEsperEventPatternsTest {
 	def void startFollowedByAbortedAfterTime() {
 		// StartEvent followed by AbortEvent after 30s
 		insert StartEvent(exchangeId: "AAA")
-		advanceTime 31, SECONDS
+		advanceTime 31.s
 		insert AbortedEvent(exchangeId: "AAA")
-		fireAllRules()
+		fireAllRules
 		assert results.isEmpty()
 
 		// StartEvent followed by AbortEvent within 30s
 		insert StartEvent(id: "se1", exchangeId: "BBB")
-		advanceTime 20, SECONDS
+		advanceTime 20.s
 		insert AbortedEvent(id: "ae1", exchangeId: "BBB")
-		fireAllRules()		
+		fireAllRules	
 		assert results["startEvent"].id == "se1"
 		assert results["abortedEvent"].id == "ae1"
 
 		// With Esper patterns, a second Aborted event should not match
 		results.clear()
 		insert AbortedEvent(id: "ae2", exchangeId: "BBB")
-		fireAllRules()
+		fireAllRules
 		assert results.isEmpty()
 
 		// And an out of order StartEvent should also not match
-		advanceTime 1, SECONDS
+		advanceTime 1.s
 		insert StartEvent(id: "se2", exchangeId: "BBB")
-		fireAllRules()		
+		fireAllRules	
 		assert results.isEmpty()
 	}
 }

@@ -24,7 +24,7 @@ public class Pattern06Test extends AbstractEsperEventPatternsTest {
 		insert 3, 1
 		insert 2, 0,     // second OFF
 
-		fireAllRules()
+		fireAllRules
 
 		assert results["begin"].id == 'A'
 		assert results["end"].id == 'F'
@@ -32,7 +32,7 @@ public class Pattern06Test extends AbstractEsperEventPatternsTest {
 	}
 
 	def void insert(p1, p2, id=null) {
-		advanceTime 1, SECONDS
+		advanceTime 1.s
 		insert ParamEvent(id: id, param1: p1, param2: p2)
 	}
 

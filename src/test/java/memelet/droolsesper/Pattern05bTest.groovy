@@ -23,13 +23,13 @@ public class Pattern05bTest extends AbstractEsperEventPatternsTest {
 	@Test
 	def void startFollowedByFinishedAndNotAbortedAfterTime() {
 		insert StartEvent(id: "se1", exchangeId: "BBB")
-		advanceTime 10, SECONDS
-		fireAllRules()
+		advanceTime 10.s
+		fireAllRules
 		assert results.isEmpty()
 
-		advanceTime 10, SECONDS
+		advanceTime 10.s
 		insert FinishedEvent(id: "fe1", exchangeId: "BBB")
-		fireAllRules()
+		fireAllRules
 		assert results.isEmpty()
 		
 		// TODO Why does this need to be 30 and not 10? It seems that 
@@ -37,11 +37,11 @@ public class Pattern05bTest extends AbstractEsperEventPatternsTest {
 		// true. 
 		//
 		// see http://www.nabble.com/Conditional-%27not%27-invalid-for-event-streams--td25217095.html
-		advanceTime 30, SECONDS
+		advanceTime 30.s
 		assert results["startEvent"].id == "se1"
 		assert results["finishedEvent"].id == "fe1"
 
-//		advanceTime 20, SECONDS
+//		advanceTime 20.s
 //		assert results["startEvent"].id == "se1"
 	}
 }

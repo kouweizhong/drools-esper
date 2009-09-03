@@ -15,6 +15,7 @@ import static java.util.concurrent.TimeUnit.*;
 import org.junit.Rule
 import org.junit.Test
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.After
 import org.junit.Ignore
 
@@ -52,8 +53,35 @@ import static org.junit.Assert.fail;
 //	
 //}
 
+class DurationAndUnit {
+	DurationAndUnit(duration, unit) {
+		this.duration = duration
+		this.unit = unit
+	}
+	Integer duration
+	TimeUnit unit
+}
+
 abstract class AbstractEsperEventPatternsTest {
 
+	static {
+		ExpandoMetaClass.enableGlobally()
+		
+		Integer.metaClass.getMs = { ->
+			new DurationAndUnit(delegate, MILLISECONDS)
+		}
+		Integer.metaClass.getS = { ->
+		new DurationAndUnit(delegate, SECONDS)
+		}
+		Integer.metaClass.getM = { ->
+			new DurationAndUnit(delegate, MINUTES)
+		}	
+
+		AbstractEsperEventPatternsTest.metaClass.getFireAllRules = { ->
+			delegate.fireAllRules()
+		}
+	}
+	
 	abstract def List<String> drlFilenames()
 	def Boolean fireUntilHalt() { false }
 	def String entryPointName() { "stream" }
@@ -67,6 +95,10 @@ abstract class AbstractEsperEventPatternsTest {
 
 	def advanceTime(duration, timeUnit) {
 		clock.advanceTime(duration, timeUnit)
+	}
+
+	def advanceTime(DurationAndUnit t) {
+		clock.advanceTime(t.duration, t.unit)
 	}
 
 	def insert(fact) { 
@@ -90,11 +122,15 @@ abstract class AbstractEsperEventPatternsTest {
 	}
 
 	def methodMissing(String name, args) {
-		if (args instanceof Object[] && args.length == 1 && args[0] instanceof HashMap) {
+		if (looksLikeConstructor(args)) {
 			newFact(this.getClass().getPackage().getName(), name, args[0])
 		} else {
 			throw new MissingMethodException(name, getClass(), args)
 		}
+	}
+
+	private looksLikeConstructor(args) {
+		args instanceof Object[] && args.length == 1 && args[0] instanceof HashMap
 	}
 
 	@Before

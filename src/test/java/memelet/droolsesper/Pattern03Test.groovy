@@ -27,22 +27,22 @@ public class Pattern03Test extends AbstractEsperEventPatternsTest {
 		// Not the same account
 		insert WithdrawalEvent(id: "w1", accountNumber: "AAA", amount: 100)
 		insert FraudWarningEvent(id: "f1", accountNumber: "BBB")
-		fireAllRules()
+		fireAllRules
 		assert results.isEmpty()
 
 		// Not within the 30s window
-		advanceTime 31, SECONDS
-		advanceTime 1000, SECONDS
+		advanceTime 31.s
+		advanceTime 1000.s
 		insert FraudWarningEvent(id: "f2", accountNumber: "AAA")
-		fireAllRules()
+		fireAllRules
 		assert results.isEmpty()
 
 		// Correlated
-		advanceTime 60, SECONDS
+		advanceTime 60.s
 		insert WithdrawalEvent(id: "w", accountNumber: "AAA", amount: 200)
-		advanceTime 10, SECONDS
+		advanceTime 10.s
 		insert FraudWarningEvent(id: "f", accountNumber: "AAA")
-		fireAllRules()
+		fireAllRules
 		
 		//TODO assert results["fireCount"] == 1
 		assert results["accountNumber"] == "AAA"
@@ -54,22 +54,22 @@ public class Pattern03Test extends AbstractEsperEventPatternsTest {
 		// Not the same account
 		entryPoint.insert WithdrawalEvent(id: "w1", accountNumber: "AAA", amount: 100)
 		entryPoint.insert FraudWarningEvent(id: "f1", accountNumber: "BBB")
-		fireAllRules()
+		fireAllRules
 		assert results.isEmpty()
 
 		// Not within the 30s window
-		advanceTime 31, SECONDS
-		advanceTime 1000, SECONDS
+		advanceTime 31.s
+		advanceTime 1000.s
 		entryPoint.insert FraudWarningEvent(id: "f2", accountNumber: "AAA")
-		fireAllRules()
+		fireAllRules
 		assert results.isEmpty()
 
 		// Correlated
-		advanceTime 60, SECONDS
+		advanceTime 60.s
 		entryPoint.insert WithdrawalEvent(id: "w", accountNumber: "AAA", amount: 200)
-		advanceTime 10, SECONDS
+		advanceTime 10.s
 		entryPoint.insert FraudWarningEvent(id: "f", accountNumber: "AAA")
-		fireAllRules()
+		fireAllRules
 		
 		//TODO assert results["fireCount"] == 1
 		assert results["ep.accountNumber"] == "AAA"

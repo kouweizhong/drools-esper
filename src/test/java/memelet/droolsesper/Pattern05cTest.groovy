@@ -23,12 +23,12 @@ public class Pattern05cTest extends AbstractEsperEventPatternsTest {
 	@Test
 	def void abortFollowedByStartAfterTime() {
 		insert AbortedEvent(id: "ae1", exchangeId: "AAA")
-		advanceTime 1, SECONDS
-		fireAllRules()
+		advanceTime 1.s
+		fireAllRules
 		assert results.isEmpty()
 		
 		insert StartEvent(id: "se1", exchangeId: "AAA")
-		fireAllRules()
+		fireAllRules
 		assert results["startEvent"].id == "se1"
 		assert results["abortedEvent"].id == "ae1"
 	}

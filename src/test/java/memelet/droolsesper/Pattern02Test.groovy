@@ -22,11 +22,11 @@ public class Pattern02Test extends AbstractEsperEventPatternsTest {
 	@Test
 	def void rateOfArrivalInAGivenTimePeriodPerCategory() {
 		30.times {
-			advanceTime 100, MILLISECONDS
+			advanceTime 100.ms
 			insert MarketDataEvent(ticker: it as String, feed: "feed1")
 			insert MarketDataEvent(ticker: it as String, feed: "feed2")
 		}
-		fireAllRules()		
+		fireAllRules		
 		assert results["arrivalRates"]["feed1"].value == 10
 		assert results["arrivalRates"]["feed2"].value == 10
 	}
