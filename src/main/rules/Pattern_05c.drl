@@ -1,7 +1,6 @@
 package memelet.droolsesper
 
 import java.util.Map
-global Map results
 
 dialect "mvel"
 
@@ -14,28 +13,34 @@ dialect "mvel"
   		s=StartEvent(exchangeId = s.echangeId) where timer:within(30 sec)]
 */
 
+global Map results
+
+declare StartEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
+
+declare AbortedEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
+
+declare FinishedEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
+
 rule "StartEvent followed by AbortedEvent"
 when
 	$ae : AbortedEvent()		
 	$se : StartEvent(exchangeId == $se.exchangeId, this after[1ms,30s] $ae)
 then
-	System.out.println("*** $se=" + $se.id + ", $ae=" + $ae.id);
-	
 	results.put("startEvent", $se);
 	results.put("abortedEvent", $ae);
 	
 	// We have to retract the StartEvent to similate esper's [every a->b]
 	retract($se)
 end
-
-/*
-  	select * from pattern [every s=StartEvent -> 
-  		(f=FinishedEvent(exchangeId = s.echangeId) where timer:within(30 sec)
-    		and not AbortedEvent(exchangeId = s.echangeId) where timer:within(30 sec)]
-  		
-*/
-rule "foo"
-when
-then
-end
-

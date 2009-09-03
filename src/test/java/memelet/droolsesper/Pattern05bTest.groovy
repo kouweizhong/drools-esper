@@ -22,13 +22,13 @@ public class Pattern05bTest extends AbstractEsperEventPatternsTest {
 	// [every s -> (f where timer:within(..) and not (a where timer:within(..))] 
 	@Test
 	def void startFollowedByFinishedAndNotAbortedAfterTime() {
-		insert new StartEvent(id: "se1", exchangeId: "BBB")
+		insert StartEvent(id: "se1", exchangeId: "BBB")
 		advanceTime 10, SECONDS
 		fireAllRules()
 		assert results.isEmpty()
 
 		advanceTime 10, SECONDS
-		insert new FinishedEvent(id: "fe1", exchangeId: "BBB")
+		insert FinishedEvent(id: "fe1", exchangeId: "BBB")
 		fireAllRules()
 		assert results.isEmpty()
 		

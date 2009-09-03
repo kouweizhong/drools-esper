@@ -22,12 +22,12 @@ public class Pattern05cTest extends AbstractEsperEventPatternsTest {
 	// [every a -> s where timer:within(..)] - out of order 
 	@Test
 	def void abortFollowedByStartAfterTime() {
-		insert new AbortedEvent(id: "ae1", exchangeId: "AAA")
+		insert AbortedEvent(id: "ae1", exchangeId: "AAA")
 		advanceTime 1, SECONDS
 		fireAllRules()
 		assert results.isEmpty()
 		
-		insert new StartEvent(id: "se1", exchangeId: "AAA")
+		insert StartEvent(id: "se1", exchangeId: "AAA")
 		fireAllRules()
 		assert results["startEvent"].id == "se1"
 		assert results["abortedEvent"].id == "ae1"

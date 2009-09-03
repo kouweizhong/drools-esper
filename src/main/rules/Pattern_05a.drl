@@ -1,7 +1,6 @@
 package memelet.droolsesper
 
 import java.util.Map
-global Map results
 
 dialect "mvel"
 
@@ -13,6 +12,27 @@ dialect "mvel"
 	select * from pattern [every s=StartEvent -> 
   		a=AbortedEvent(exchangeId = s.echangeId) where timer:within(30 sec)]
 */
+
+global Map results
+
+declare StartEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
+
+declare AbortedEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
+
+declare FinishedEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
+
 rule "[every s->a] How do I use patterns to correlate events arriving in-order or out-of-order?"
 when
 	$se : StartEvent() 		

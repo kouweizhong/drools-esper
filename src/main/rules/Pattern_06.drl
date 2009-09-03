@@ -2,7 +2,6 @@ package memelet.droolsesper
 
 import java.util.List
 import java.util.Map
-global Map results
 
 dialect "mvel"
 
@@ -18,6 +17,16 @@ dialect "mvel"
          		until endevent=Event(param1 = beginevent.param1, param2 = 0)
   	]	
 */	
+
+global Map results
+
+declare ParamEvent
+	@role(event)
+	@expires(60s)
+	id     : String 
+	param1 : Integer
+	param2 : Integer
+end
 
 rule "detect events between other events"
 when

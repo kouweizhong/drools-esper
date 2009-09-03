@@ -2,8 +2,6 @@ package memelet.droolsesper
 
 import java.util.Map
 
-global Map results
-
 dialect "mvel"
 
 /*
@@ -28,6 +26,15 @@ dialect "mvel"
  This might allow for a more generic accumulator that would be as generic
  as Esper's 'group by'. 
 */
+
+global Map results
+
+declare MarketDataEvent
+	@role(event)
+	id     : String
+	ticker : String
+	feed   : String
+end
 
 rule "Rate of arrival of events in a given time period per category?"
 when

@@ -1,8 +1,6 @@
 package memelet.droolsesper
 
 import java.util.Map
-global Map results
-
 dialect "mvel"
 
 /*
@@ -16,12 +14,26 @@ dialect "mvel"
 	where fraud.accountNumber = withdraw.accountNumber
 */	
 
+global Map results
+
+declare WithdrawalEvent
+	@role(event)
+	id            : String
+	accountNumber : String
+	amount        : Integer
+end
+
+declare FraudWarningEvent
+	@role(event)
+	id            : String
+	accountNumber : String
+end
+
 rule "Correlate events arriving in 2 or more streams?"
 when
     $e : WithdrawalEvent($accountNumber : accountNumber, $amount : amount) over window:time(30s) 
     $f : FraudWarningEvent(accountNumber == $accountNumber) over window:time(30s) 
 then
-	System.out.println("e=" + $e.id + ", f=" + $f.id)
 	results.put("accountNumber", $accountNumber);
 	results.put("amount", $amount);
 end
@@ -33,7 +45,6 @@ when
     $f : FraudWarningEvent(accountNumber == $accountNumber) over window:time(30s) 
     		from entry-point "stream"    
 then
-	System.out.println("e=" + $e.id + ", f=" + $f.id)
 	results.put("ep.accountNumber", $accountNumber);
 	results.put("ep.amount", $amount);
 end

@@ -33,7 +33,7 @@ public class Pattern06Test extends AbstractEsperEventPatternsTest {
 
 	def void insert(p1, p2, id=null) {
 		advanceTime 1, SECONDS
-		insert new ParamEvent(id: id, param1: p1, param2: p2)
+		insert ParamEvent(id: id, param1: p1, param2: p2)
 	}
 
 

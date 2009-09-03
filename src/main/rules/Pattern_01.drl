@@ -18,6 +18,13 @@ dialect "mvel"
 
 global Map results
 
+declare MarketDataEvent
+	@role(event)
+	id     : String
+	ticker : String
+	feed   : String
+end
+
 rule "Rate of arrival of events in a given time period?"
 when
 	$rate : Long() from accumulate ( 

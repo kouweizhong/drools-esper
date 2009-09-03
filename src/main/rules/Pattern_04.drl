@@ -1,7 +1,6 @@
 package memelet.droolsesper
 
 import java.util.Map
-global Map results
 
 dialect "mvel"
 
@@ -24,6 +23,26 @@ dialect "mvel"
 	(eg, A StartEvent will go into the 'remove' 30 seconds after 
 	it has entered this statement.)      		
 */	
+
+global Map results
+
+declare StartEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
+
+declare AbortedEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
+
+declare FinishedEvent
+	@role(event)
+	id         : String 
+	exchangeId : String
+end
 
 rule "How_do_I_correlate_events_arriving_out_of_order?"
 when

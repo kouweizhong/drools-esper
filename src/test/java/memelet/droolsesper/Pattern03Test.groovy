@@ -25,23 +25,23 @@ public class Pattern03Test extends AbstractEsperEventPatternsTest {
 	@Test 
 	def void correlateEventsArrivingIn2OrMoreStreams() {
 		// Not the same account
-		insert new WithdrawalEvent(id: "w1", accountNumber: "AAA", amount: 100)
-		insert new FraudWarningEvent(id: "f1", accountNumber: "BBB")
+		insert WithdrawalEvent(id: "w1", accountNumber: "AAA", amount: 100)
+		insert FraudWarningEvent(id: "f1", accountNumber: "BBB")
 		fireAllRules()
 		assert results.isEmpty()
 
 		// Not within the 30s window
 		advanceTime 31, SECONDS
 		advanceTime 1000, SECONDS
-		insert new FraudWarningEvent(id: "f2", accountNumber: "AAA")
+		insert FraudWarningEvent(id: "f2", accountNumber: "AAA")
 		fireAllRules()
 		assert results.isEmpty()
 
 		// Correlated
 		advanceTime 60, SECONDS
-		insert new WithdrawalEvent(id: "w", accountNumber: "AAA", amount: 200)
+		insert WithdrawalEvent(id: "w", accountNumber: "AAA", amount: 200)
 		advanceTime 10, SECONDS
-		insert new FraudWarningEvent(id: "f", accountNumber: "AAA")
+		insert FraudWarningEvent(id: "f", accountNumber: "AAA")
 		fireAllRules()
 		
 		//TODO assert results["fireCount"] == 1
@@ -52,23 +52,23 @@ public class Pattern03Test extends AbstractEsperEventPatternsTest {
 	@Test
 	def void correlateEventsArrivingIn2OrMoreStreamsWithNamedEntryPoint() {
 		// Not the same account
-		entryPoint.insert new WithdrawalEvent(id: "w1", accountNumber: "AAA", amount: 100)
-		entryPoint.insert new FraudWarningEvent(id: "f1", accountNumber: "BBB")
+		entryPoint.insert WithdrawalEvent(id: "w1", accountNumber: "AAA", amount: 100)
+		entryPoint.insert FraudWarningEvent(id: "f1", accountNumber: "BBB")
 		fireAllRules()
 		assert results.isEmpty()
 
 		// Not within the 30s window
 		advanceTime 31, SECONDS
 		advanceTime 1000, SECONDS
-		entryPoint.insert new FraudWarningEvent(id: "f2", accountNumber: "AAA")
+		entryPoint.insert FraudWarningEvent(id: "f2", accountNumber: "AAA")
 		fireAllRules()
 		assert results.isEmpty()
 
 		// Correlated
 		advanceTime 60, SECONDS
-		entryPoint.insert new WithdrawalEvent(id: "w", accountNumber: "AAA", amount: 200)
+		entryPoint.insert WithdrawalEvent(id: "w", accountNumber: "AAA", amount: 200)
 		advanceTime 10, SECONDS
-		entryPoint.insert new FraudWarningEvent(id: "f", accountNumber: "AAA")
+		entryPoint.insert FraudWarningEvent(id: "f", accountNumber: "AAA")
 		fireAllRules()
 		
 		//TODO assert results["fireCount"] == 1
